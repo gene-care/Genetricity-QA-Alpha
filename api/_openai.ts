@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { OPENAI_API_KEY } from "./_config";
+import { OPENAI_API_KEY } from "./_config.js";
 
 let openaiClient: OpenAI | null = null;
 

@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getDb } from "./_db";
-import { getOpenAI } from "./_openai";
+import { getDb } from "./_db.js";
+import { getOpenAI } from "./_openai.js";
 import {
   OPENAI_EMBEDDING_MODEL,
   OPENAI_CHAT_MODEL,
@@ -9,7 +9,7 @@ import {
   RAG_NUM_CANDIDATES,
   RAG_SCORE_THRESHOLD,
   RAG_SEPARATOR_WIDTH,
-} from "./_config";
+} from "./_config.js";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

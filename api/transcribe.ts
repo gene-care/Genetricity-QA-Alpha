@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getOpenAI } from "./_openai";
+import { getOpenAI } from "./_openai.js";
 
 // Node < 20 doesn't expose File as a global; polyfill it so the OpenAI SDK can upload files
 if (!globalThis.File) {
