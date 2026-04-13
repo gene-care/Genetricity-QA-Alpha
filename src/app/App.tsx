@@ -125,7 +125,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="flex-1 overflow-y-auto px-6 py-4 pb-16">
           <div className="max-w-4xl mx-auto pt-10 pb-4">
             {/* Messages */}
             <div className="space-y-2">
@@ -173,7 +173,7 @@ export default function App() {
       </div>
 
       {/* Clear Conversation Button */}
-      <div className="px-6 py-4 bg-white border-t border-gray-200">
+      <div className="fixed bottom-0 left-0 right-0 px-6 py-4 bg-white border-t border-gray-200 z-50">
         <div className="max-w-4xl mx-auto">
           <button
             className="text-sm text-gray-500 hover:text-gray-700"
