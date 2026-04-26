@@ -23,10 +23,10 @@ function buildCopyText(message: Message): string {
 function ReferenceList({ references }: { references: Reference[] }) {
   return (
     <div className="mt-4 pt-4 border-t border-gray-300">
-      <p className="text-sm font-semibold mb-2 text-black">References:</p>
+      <p className="font-semibold mb-2 text-black">References:</p>
       <div className="space-y-3">
         {references.map((ref, index) => (
-          <div key={index} className="text-sm">
+          <div key={index}>
             <a
               href={ref.url}
               target="_blank"
@@ -40,7 +40,7 @@ function ReferenceList({ references }: { references: Reference[] }) {
               <ExternalLink className="w-5 h-5 mt-0.5 flex-shrink-0 text-blue-600 opacity-80 group-hover:opacity-100" />
             </a>
             {ref.f70 && (
-              <p className="mt-2 pl-3 text-sm italic text-black border-l-2 border-gray-300">
+              <p className="mt-2 pl-3 italic text-black border-l-2 border-gray-300">
                 "{ref.f70}..."
               </p>
             )}

@@ -21,12 +21,14 @@ const [
   { default: chatHandler },
   { default: reviewHandler },
   { default: transcribeHandler },
+  { default: prefetchHandler },
 ] = await Promise.all([
   import("./api/login.js"),
   import("./api/questions.js"),
   import("./api/chat.js"),
   import("./api/review.js"),
   import("./api/transcribe.js"),
+  import("./api/prefetch.js"),
 ]);
 
 const app = express();
@@ -39,6 +41,7 @@ app.get("/api/questions", adapt(questionsHandler));
 app.post("/api/chat", adapt(chatHandler));
 app.post("/api/review", adapt(reviewHandler));
 app.post("/api/transcribe", adapt(transcribeHandler));
+app.post("/api/prefetch", adapt(prefetchHandler));
 
 const PORT = 3001;
 app.listen(PORT, () => console.log(`API dev server → http://localhost:${PORT}`));

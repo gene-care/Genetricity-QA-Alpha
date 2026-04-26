@@ -40,7 +40,7 @@ export function FeedbackForm({ recordId, onSubmitComplete }: FeedbackFormProps) 
         {/* 10-point scale */}
         <div className="mb-4">
           <div className="flex gap-2 mb-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+            {[1, 2, 3, 4, 5].map((num) => (
               <button
                 key={num}
                 type="button"
@@ -57,8 +57,8 @@ export function FeedbackForm({ recordId, onSubmitComplete }: FeedbackFormProps) 
             ))}
           </div>
           <div className="flex justify-between text-xs text-gray-600">
-            <span>Not at all likely</span>
-            <span>Extremely Likely</span>
+            <span>Extremely unhelpful</span>
+            <span>Extremely helpful</span>
           </div>
         </div>
 

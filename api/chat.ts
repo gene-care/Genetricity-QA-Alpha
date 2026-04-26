@@ -84,7 +84,7 @@ async function vectorSearch(embedding: number[]) {
           limit: RAG_TOP_N,
         },
       },
-      { $project: { _id: 1, data: 1, url: 1, filename: 1, score: { $meta: "vectorSearchScore" } } },
+      { $project: { _id: 1, data: 1, url: 1, filename: 1, title: 1, score: { $meta: "vectorSearchScore" } } },
     ])
     .toArray();
 }
@@ -118,13 +118,14 @@ async function ragSearch(queries: string[]): Promise<{ context: string; referenc
 
     context += `[${refNum}] ${result.data}${separator}`;
 
+    const title = (result.title as string) ?? "";
     const filename = (result.filename as string) ?? "";
     const parts = filename.split("_");
     const pageNo = parts.length >= 3 ? parts[parts.length - 2] : null;
     const chunkText = (result.data as string).trim();
     const f70 = chunkText.length > 70 ? chunkText.slice(0, 70) : chunkText;
 
-    references.push({ fileName: filename, url: result.url as string, pageNo, f70 });
+    references.push({ fileName: title, url: result.url as string, pageNo, f70 });
     refNum++;
   }
 

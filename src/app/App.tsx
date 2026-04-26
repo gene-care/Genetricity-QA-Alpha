@@ -6,7 +6,7 @@ import { ChatInput } from "./components/ChatInput";
 import { CommonQuestions } from "./components/CommonQuestions";
 import { FeedbackForm } from "./components/FeedbackForm";
 import { LoginBox } from "./components/LoginBox";
-import { sendChat, fetchQuestions } from "./services/api";
+import { sendChat, fetchQuestions, fetchPresetAnswer } from "./services/api";
 import type { Message, AuthState, QuestionItem } from "./types";
 
 export default function App() {
@@ -16,6 +16,7 @@ export default function App() {
   const [auth, setAuth] = useState<AuthState>({ isAuthenticated: false, userId: null });
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [activeRecordId, setActiveRecordId] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,6 +67,57 @@ export default function App() {
     }
   };
 
+  const handlePresetQuestion = async (question: string) => {
+    if (!auth.isAuthenticated || !auth.userId) return;
+
+    setMessages([]);
+    setCurrentQuestion(question);
+    setActiveRecordId(null);
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      type: "user",
+      content: question,
+      timestamp: new Date(),
+    };
+    setMessages([userMessage]);
+    setIsTyping(true);
+
+    try {
+      const result = await fetchPresetAnswer(question, auth.userId);
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: "bot",
+        content: result.answer,
+        references: result.references,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botMessage]);
+      setActiveRecordId(result.recordId);
+    } catch {
+      // Fall back to live RAG if the question isn't in V2_Train
+      try {
+        const result = await sendChat(question, auth.userId);
+        const botMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: "bot",
+          content: result.answer,
+          references: result.references,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, botMessage]);
+        setActiveRecordId(result.recordId);
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          { id: (Date.now() + 1).toString(), type: "bot", content: "Sorry, something went wrong. Please try again.", timestamp: new Date() },
+        ]);
+      }
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
   const handleClearConversation = () => {
     setMessages([]);
     setCurrentQuestion("");
@@ -77,13 +129,19 @@ export default function App() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-600 rounded-lg">
-            <MessageSquare className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900">Q&A Alpha</h1>
-            <p className="text-sm text-gray-600">Evidence-based answers to...</p>
-          </div>
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            aria-label="Go to home"
+          >
+            <div className="p-2 bg-blue-600 rounded-lg">
+              <MessageSquare className="w-6 h-6 text-white" />
+            </div>
+            <div className="text-left">
+              <h1 className="text-xl font-semibold text-gray-900">Q&A Alpha</h1>
+              <p className="text-sm text-gray-600">Evidence-based answers to...</p>
+            </div>
+          </button>
         </div>
       </header>
 
@@ -93,31 +151,29 @@ export default function App() {
         <div className="px-6 pt-4 pb-4 bg-white">
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-3 gap-4">
-              {/* Input Area - Takes 2 columns */}
-              <div className="col-span-2 h-64 flex flex-col gap-4">
-                {/* Disclaimer */}
-                <DisclaimerNotice />
-
-                {/* Input */}
-                <div className="flex-1">
-                  <ChatInput
-                    onSendMessage={handleSendMessage}
-                    disabled={isTyping || !auth.isAuthenticated}
-                    value={currentQuestion}
-                    onChange={setCurrentQuestion}
-                  />
+              {/* Input Area - hidden when a category is selected */}
+              {!selectedCategory && (
+                <div className="col-span-2 h-64 flex flex-col gap-4">
+                  <DisclaimerNotice />
+                  <div className="flex-1">
+                    <ChatInput
+                      onSendMessage={handleSendMessage}
+                      disabled={isTyping || !auth.isAuthenticated}
+                      value={currentQuestion}
+                      onChange={setCurrentQuestion}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Top Questions - visible only after login */}
-              <div className="col-span-1 h-64">
+              {/* Top Questions - expands to full width when category selected */}
+              <div className={`h-64 transition-all duration-300 ${selectedCategory ? "col-span-3" : "col-span-1"}`}>
                 {auth.isAuthenticated && (
                   <CommonQuestions
                     questions={questions}
-                    onSelectQuestion={(q) => {
-                      setCurrentQuestion(q);
-                      handleSendMessage(q);
-                    }}
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={setSelectedCategory}
+                    onSelectQuestion={(q) => handlePresetQuestion(q)}
                   />
                 )}
               </div>
@@ -126,7 +182,7 @@ export default function App() {
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-4 pb-16">
-          <div className="max-w-4xl mx-auto pt-10 pb-4">
+          <div className={`max-w-4xl mx-auto pb-4 ${selectedCategory ? "pt-0" : "pt-10"}`}>
             {/* Messages */}
             <div className="space-y-2">
               {messages.map(

@@ -40,6 +40,14 @@ export async function sendChat(question: string, userId: string): Promise<ChatRe
   return { answer: data.answer, recordId: data.record_id, references: data.references };
 }
 
+export async function fetchPresetAnswer(question: string, userId: string): Promise<ChatResult> {
+  const data = await post<{ answer: string; record_id: string; references: Reference[] }>(
+    "/api/prefetch",
+    { question, user_id: userId }
+  );
+  return { answer: data.answer, recordId: data.record_id, references: data.references };
+}
+
 export async function submitReview(recordId: string, rating: number, comment: string): Promise<void> {
   await post("/api/review", { record_id: recordId, rating, comment });
 }

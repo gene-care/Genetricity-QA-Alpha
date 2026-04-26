@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getDb } from "./_db.js";
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
-  const collection = (await getDb("Question_Set")).collection("V1_Train");
+  const collection = (await getDb("Question_Set")).collection("V2_Train");
 
   const docs = await collection
     .find({}, { projection: { _id: 0, question: 1, category: 1 } })
