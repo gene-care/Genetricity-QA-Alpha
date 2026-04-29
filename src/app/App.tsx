@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { MessageSquare, Trash2 } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Trash2 } from "lucide-react";
 import { DisclaimerNotice } from "./components/DisclaimerNotice";
 import { ChatMessage } from "./components/ChatMessage";
 import { ChatInput } from "./components/ChatInput";
@@ -8,6 +8,7 @@ import { FeedbackForm } from "./components/FeedbackForm";
 import { LoginBox } from "./components/LoginBox";
 import { sendChat, fetchQuestions, fetchPresetAnswer } from "./services/api";
 import type { Message, AuthState, QuestionItem } from "./types";
+import logo from "../assets/logo.png";
 
 export default function App() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -128,19 +129,23 @@ export default function App() {
     <div className="size-full flex flex-col bg-white">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setSelectedCategory(null)}
-            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-1 hover:opacity-80 transition-opacity"
             aria-label="Go to home"
           >
-            <div className="p-2 bg-blue-600 rounded-lg">
-              <MessageSquare className="w-6 h-6 text-white" />
+            <div className="rounded-lg">
+              <img
+                src={logo}
+                alt="Genetricity logo"
+                className="w-16 h-14 object-contain rounded-2xl"
+              />
             </div>
-            <div className="text-left">
-              <h1 className="text-xl font-semibold text-gray-900">Q&A Alpha</h1>
-              <p className="text-sm text-gray-600">Evidence-based answers to...</p>
-            </div>
+            <span className="text-5xl font-semibold tracking-tight leading-none">
+              <span className="text-[#22235B]">Gene</span>
+              <span className="text-[#1F7A5C]">tricity</span>
+            </span>
           </button>
         </div>
       </header>
