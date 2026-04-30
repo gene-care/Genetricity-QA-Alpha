@@ -158,7 +158,7 @@ export function ChatInput({ onSendMessage, disabled, value, onChange }: ChatInpu
             value={input}
             onChange={(e) => handleInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your message here..."
+            placeholder="Ask your questions about genetics by typing them here or use the microphone but clicking on its icon. To ask a follow up question, erase your original question."
             disabled={disabled || micBusy}
             className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-full min-h-[120px] disabled:opacity-60"
             rows={1}
