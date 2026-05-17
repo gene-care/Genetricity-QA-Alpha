@@ -1,4 +1,4 @@
-import { Mic, MicOff, Send, Loader2 } from "lucide-react";
+import { Mic, Square, Send, Loader2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 interface ChatInputProps {
@@ -6,6 +6,7 @@ interface ChatInputProps {
   disabled?: boolean;
   value?: string;
   onChange?: (value: string) => void;
+  showExportButtons?: boolean;
 }
 
 const MAX_RECORDING_SECONDS = 5 * 60; // 5 minutes
@@ -25,7 +26,7 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
-export function ChatInput({ onSendMessage, disabled, value, onChange }: ChatInputProps) {
+export function ChatInput({ onSendMessage, disabled, value, onChange, showExportButtons }: ChatInputProps) {
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -150,7 +151,7 @@ export function ChatInput({ onSendMessage, disabled, value, onChange }: ChatInpu
   const micBusy = isRecording || isTranscribing;
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-gray-200 bg-white p-4 h-full flex flex-col">
+    <form onSubmit={handleSubmit} className="bg-white p-4 h-full flex flex-col">
       <div className="flex items-start gap-2 flex-1">
         <div className="flex-1 relative flex flex-col h-full">
           <textarea
@@ -158,7 +159,7 @@ export function ChatInput({ onSendMessage, disabled, value, onChange }: ChatInpu
             value={input}
             onChange={(e) => handleInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder=""
+            placeholder="Ask a question about genetic syndromes"
             disabled={disabled || micBusy}
             className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-full min-h-[120px] disabled:opacity-60"
             rows={1}
@@ -197,7 +198,7 @@ export function ChatInput({ onSendMessage, disabled, value, onChange }: ChatInpu
             }`}
             aria-label={isRecording ? "Stop recording" : "Start recording"}
           >
-            {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+            {isRecording ? <Square className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
           </button>
 
           {/* Send button */}
@@ -212,14 +213,27 @@ export function ChatInput({ onSendMessage, disabled, value, onChange }: ChatInpu
         </div>
       </div>
 
-      <p className="text-xs text-gray-500 mt-2 mb-2">
+      <div className="flex justify-between items-center mt-2 mb-2">
+      <p className="text-xs text-gray-500">
         Press Enter to send, Shift + Enter for new line
-        {isRecording && (
-          <span className="ml-3 text-red-500 font-medium">
-            Recording stops automatically at 5:00
-          </span>
-        )}
       </p>
+      {showExportButtons && (
+          <div className="flex gap-3">
+            <button
+              type="button"
+              className="px-2 py-1.5 bg-white border border-gray-300 text-xs text-blue-600 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors cursor-pointer"
+            >
+              Clinical Note
+            </button>
+            <button
+              type="button"
+              className="px-2 py-1.5 bg-white border border-gray-300 text-xs text-blue-600 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors cursor-pointer"
+            >
+              Patient Handout
+            </button>
+          </div>
+        )}
+      </div>
     </form>
   );
 }

@@ -137,7 +137,7 @@ async function ragSearch(queries: string[]): Promise<{ context: string; referenc
 
 async function fetchSystemPrompt(): Promise<string> {
   const collection = (await getDb("Prompts")).collection("System_Prompts");
-  const doc = await collection.findOne({ refID: "alphaTestHF", version: "2" });
+  const doc = await collection.findOne({ refID: "alphaTestHF", version: "3" });
   return (doc?.value as string) ?? "";
 }
 

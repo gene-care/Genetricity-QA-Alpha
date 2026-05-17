@@ -16,17 +16,13 @@ function adapt(handler: Handler) {
 
 // Dynamic imports run after dotenv.config() so env vars are available
 const [
-  { default: loginHandler },
   { default: questionsHandler },
   { default: chatHandler },
-  { default: reviewHandler },
   { default: transcribeHandler },
   { default: prefetchHandler },
 ] = await Promise.all([
-  import("./api/login.js"),
   import("./api/questions.js"),
   import("./api/chat.js"),
-  import("./api/review.js"),
   import("./api/transcribe.js"),
   import("./api/prefetch.js"),
 ]);
@@ -36,10 +32,8 @@ const app = express();
 // Base64 audio can be up to ~20MB for a 5-min recording
 app.use(express.json({ limit: "25mb" }));
 
-app.post("/api/login", adapt(loginHandler));
 app.get("/api/questions", adapt(questionsHandler));
 app.post("/api/chat", adapt(chatHandler));
-app.post("/api/review", adapt(reviewHandler));
 app.post("/api/transcribe", adapt(transcribeHandler));
 app.post("/api/prefetch", adapt(prefetchHandler));
 

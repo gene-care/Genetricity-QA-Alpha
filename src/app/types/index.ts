@@ -18,13 +18,7 @@ export interface Message {
   timestamp: Date;
 }
 
-export interface AuthState {
-  isAuthenticated: boolean;
-  userId: string | null;
-}
-
 export interface ChatResult {
   answer: string;
-  recordId: string;
   references: Reference[];
 }

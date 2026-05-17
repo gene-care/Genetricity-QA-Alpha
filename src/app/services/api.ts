@@ -1,4 +1,7 @@
-import type { AuthState, ChatResult, QuestionItem, Reference } from "../types";
+import type { ChatResult, QuestionItem, Reference } from "../types";
+
+/** Stored on usage records when there is no logged-in user. */
+const ANONYMOUS_USER_ID = "anonymous";
 
 async function post<T>(path: string, body: object): Promise<T> {
   const res = await fetch(path, {
@@ -19,35 +22,22 @@ async function get<T>(path: string): Promise<T> {
   return res.json();
 }
 
-export async function login(userid: string, password: string): Promise<AuthState & { message: string }> {
-  const data = await post<{ success: boolean; message: string }>("/api/login", { userid, password });
-  return {
-    isAuthenticated: data.success,
-    userId: data.success ? userid : null,
-    message: data.message,
-  };
-}
-
 export async function fetchQuestions(): Promise<QuestionItem[]> {
   return get<QuestionItem[]>("/api/questions");
 }
 
-export async function sendChat(question: string, userId: string): Promise<ChatResult> {
-  const data = await post<{ answer: string; record_id: string; references: Reference[] }>(
-    "/api/chat",
-    { question, user_id: userId }
-  );
-  return { answer: data.answer, recordId: data.record_id, references: data.references };
+export async function sendChat(question: string): Promise<ChatResult> {
+  const data = await post<{ answer: string; references: Reference[] }>("/api/chat", {
+    question,
+    user_id: ANONYMOUS_USER_ID,
+  });
+  return { answer: data.answer, references: data.references };
 }
 
-export async function fetchPresetAnswer(question: string, userId: string): Promise<ChatResult> {
-  const data = await post<{ answer: string; record_id: string; references: Reference[] }>(
-    "/api/prefetch",
-    { question, user_id: userId }
-  );
-  return { answer: data.answer, recordId: data.record_id, references: data.references };
-}
-
-export async function submitReview(recordId: string, rating: number, comment: string): Promise<void> {
-  await post("/api/review", { record_id: recordId, rating, comment });
+export async function fetchPresetAnswer(question: string): Promise<ChatResult> {
+  const data = await post<{ answer: string; references: Reference[] }>("/api/prefetch", {
+    question,
+    user_id: ANONYMOUS_USER_ID,
+  });
+  return { answer: data.answer, references: data.references };
 }
