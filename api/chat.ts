@@ -90,14 +90,18 @@ async function vectorSearch(embedding: number[]) {
 }
 
 async function ragSearch(queries: string[]): Promise<{ context: string; references: ReferenceItem[] }> {
-  // Run vector search for each expanded query, deduplicating by document _id
+  // Embed + vector search in parallel per expanded query, then dedupe by document _id
+  const perQueryResults = await Promise.all(
+    queries.map(async (query) => {
+      const embedding = await embed(query);
+      return vectorSearch(embedding);
+    })
+  );
+
   const seenIds = new Set<string>();
   const allResults: Awaited<ReturnType<typeof vectorSearch>> = [];
 
-  for (const query of queries) {
-    const embedding = await embed(query);
-    const results = await vectorSearch(embedding);
-
+  for (const results of perQueryResults) {
     for (const result of results) {
       const id = result._id.toString();
       if (!seenIds.has(id)) {
