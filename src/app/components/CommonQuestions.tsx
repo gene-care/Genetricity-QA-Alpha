@@ -8,9 +8,14 @@ interface CommonQuestionsProps {
   selectedQuestion?: string;
 }
 
-function groupByCategory(items: QuestionItem[]): Record<string, string[]> {
-  return items.reduce<Record<string, string[]>>((acc, { question, category }) => {
-    (acc[category] ??= []).push(question);
+function groupByField(
+  items: QuestionItem[],
+  field: "topic" | "syndrome"
+): Record<string, string[]> {
+  return items.reduce<Record<string, string[]>>((acc, item) => {
+    const key = item[field];
+    if (!key) return acc;
+    (acc[key] ??= []).push(item.question);
     return acc;
   }, {});
 }
@@ -19,8 +24,8 @@ export function CommonQuestions({ questions, onSelectQuestion, selectedQuestion 
   const [viewMode, setViewMode] = useState<"topic" | "syndrome">("topic");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const grouped = useMemo(() => groupByCategory(questions), [questions]);
-  const categories = Object.keys(grouped);
+  const grouped = useMemo(() => groupByField(questions, viewMode), [questions, viewMode]);
+  const categories = Object.keys(grouped).sort();
 
   const handleBackToList = () => setSelectedCategory(null);
 

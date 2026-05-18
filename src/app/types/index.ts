@@ -1,6 +1,7 @@
 export interface QuestionItem {
   question: string;
-  category: string;
+  topic: string | null;
+  syndrome: string | null;
 }
 
 export interface Reference {
